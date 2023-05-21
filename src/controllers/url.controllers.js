@@ -37,7 +37,14 @@ export async function getUrlId(req, res){
     const { id } = req.params
 
     try{
+        const url = await db.query(`
+        SELECT "shortenedUrls".id, "shortUrl", "originalUrls".url AS "originalUrl"
+        FROM "shortenedUrls"
+        JOIN "originalUrls" ON "shortenedUrls"."originalUrlId" = "originalUrls".id
+        WHERE "shortenedUrls".id = $1
+        `, [id])
         
+        res.status(200).send(url.rows[0])
     } catch(err){
         res.status(500).send(err.message)
     }

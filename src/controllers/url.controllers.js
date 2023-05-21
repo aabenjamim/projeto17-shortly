@@ -37,6 +37,14 @@ export async function getUrlId(req, res){
     const { id } = req.params
 
     try{
+        const existe = await db.query(`
+        SELECT * FROM "shortenedUrls" WHERE id=$1
+        `, [id])
+
+        if(existe.rows.length===0){
+            return res.status(404).send('Url não encontrada')
+        }
+
         const url = await db.query(`
         SELECT "shortenedUrls".id, "shortUrl", "originalUrls".url AS "originalUrl"
         FROM "shortenedUrls"
@@ -45,6 +53,36 @@ export async function getUrlId(req, res){
         `, [id])
         
         res.status(200).send(url.rows[0])
+    } catch(err){
+        res.status(500).send(err.message)
+    }
+}
+
+export async function getRedirect(req, res){
+    const { shortUrl } = req.params
+
+    try{
+        const existe = await db.query(`
+        SELECT * FROM "shortenedUrls" WHERE "shortUrl"=$1
+        `, [shortUrl])
+
+        if(existe.rows.length===0){
+            return res.status(404).send('Url não encontrada')
+        }
+
+        await db.query(`
+        UPDATE "shortenedUrls" SET "visitCount"="visitCount"+1 WHERE "shortUrl"=$1
+        `,[shortUrl])
+
+        const urlOriginal = await db.query(`
+        SELECT "originalUrls".url AS "originalUrl"
+        FROM "shortenedUrls"
+        JOIN "originalUrls" ON "shortenedUrls"."originalUrlId" = "originalUrls".id
+        WHERE "shortenedUrls"."shortUrl" = $1
+        `, [shortUrl])
+
+        res.redirect(urlOriginal.rows[0].originalUrl)
+
     } catch(err){
         res.status(500).send(err.message)
     }

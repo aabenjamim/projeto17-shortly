@@ -145,16 +145,17 @@ export async function getUserMe(req, res) {
 export async function getRanking(req, res) {
 
     try {
-      const ranking = await db.query(`
+        const ranking = await db.query(`
         SELECT users.id, users.name,
-        COUNT("shortenedUrls".id) AS linksCount,
-          COALESCE(SUM("shortenedUrls"."visitCount"), 0) AS "visitCount"
+            COUNT("shortenedUrls".id) AS "linksCount",
+            COALESCE(SUM("shortenedUrls"."visitCount"), 0) AS "visitCount"
         FROM users
         LEFT JOIN
-          "shortenedUrls" ON "shortenedUrls"."userId" = users.id
+            "shortenedUrls" ON "shortenedUrls"."userId" = users.id
         GROUP BY users.id
         ORDER BY "visitCount" DESC
-        LIMIT 10;`)
+        LIMIT 10;`
+        )
   
 
       const rankingOrg = ranking.rows.map((row) => ({
@@ -168,5 +169,5 @@ export async function getRanking(req, res) {
     } catch (err) {
       res.status(500).send(err.message)
     }
-  }
+}
   

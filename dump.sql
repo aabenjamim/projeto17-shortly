@@ -59,7 +59,8 @@ ALTER SEQUENCE public."originalUrls_id_seq" OWNED BY public."originalUrls".id;
 CREATE TABLE public.sessions (
     id integer NOT NULL,
     token text NOT NULL,
-    "idUser" integer NOT NULL
+    "idUser" integer NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -125,7 +126,8 @@ CREATE TABLE public.users (
     id integer NOT NULL,
     name text NOT NULL,
     email text NOT NULL,
-    password text NOT NULL
+    password text NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
 );
 
 

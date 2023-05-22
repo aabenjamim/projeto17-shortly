@@ -141,7 +141,7 @@ export async function getUserMe(req, res) {
       res.status(500).send(err.message);
     }
 }
-
+/*
 export async function getRanking(req, res){
     try{
         const ranking = await db.query(`
@@ -171,4 +171,39 @@ export async function getRanking(req, res){
     } catch(err){
         res.status(500).send(err.message);
     }
-}
+}*/
+
+export async function getRanking(req, res) {
+    try {
+      const query = `
+        SELECT
+          users.id,
+          users.name,
+          COUNT("shortenedUrls".id) AS linksCount,
+          COALESCE(SUM("shortenedUrls"."visitCount"), 0) AS "visitCount"
+        FROM
+          users
+        LEFT JOIN
+          "shortenedUrls" ON "shortenedUrls"."userId" = users.id
+        GROUP BY
+          users.id
+        ORDER BY
+          "visitCount" DESC
+        LIMIT
+          10;
+      `;
+  
+      const result = await db.query(query);
+      const usersStats = result.rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        linksCount: row.linksCount,
+        visitCount: row.visitCount,
+      }));
+  
+      res.status(200).json(usersStats);
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
+  }
+  

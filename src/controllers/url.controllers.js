@@ -167,7 +167,7 @@ export async function getRanking(req, res){
         LIMIT 10;
         `)
 
-        res.status(200).send(ranking.rows[0].ranking)
+        res.status(200).send(ranking.rows.ranking)
     } catch(err){
         res.status(500).send(err.message);
     }

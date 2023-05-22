@@ -18,7 +18,7 @@ export async function postUrl(req, res){
         const shortUrl = nanoid(8)
 
         await db.query(`
-        INSERT INTO "shortenedUrls" ("shortUrl", "originalUrlId", ""visitCount"", "userId")
+        INSERT INTO "shortenedUrls" ("shortUrl", "originalUrlId", "visitCount", "userId")
             VALUES ($1, $2, $3, $4)
         `, [shortUrl, idOriginal.rows[0].id, 0, sessao.rows[0].idUser])
 

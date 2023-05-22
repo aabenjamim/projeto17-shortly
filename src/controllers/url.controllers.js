@@ -141,69 +141,32 @@ export async function getUserMe(req, res) {
       res.status(500).send(err.message);
     }
 }
-/*
-export async function getRanking(req, res){
-    try{
-        const ranking = await db.query(`
-        SELECT json_agg(
-          json_build_object(
-            'id', users.id,
-            'name', users.name,
-            'linksCount', links.count,
-            'visitCount', links.sum_visit_count
-          )
-        ) AS ranking
-        FROM users
-        LEFT JOIN (
-            SELECT
-            "shortenedUrls"."userId",
-            COUNT("shortenedUrls".id) AS count,
-            COALESCE(SUM("shortenedUrls"."visitCount"), 0) AS sum_visit_count
-            FROM "shortenedUrls"
-            GROUP BY "shortenedUrls"."userId"
-        ) AS links ON links."userId" = users.id
-        GROUP BY users.id, links.sum_visit_count
-        ORDER BY links.sum_visit_count DESC
-        LIMIT 10;
-        `)
-
-        res.status(200).send(ranking.rows.ranking)
-    } catch(err){
-        res.status(500).send(err.message);
-    }
-}*/
 
 export async function getRanking(req, res) {
+
     try {
-      const query = `
-        SELECT
-          users.id,
-          users.name,
-          COUNT("shortenedUrls".id) AS linksCount,
+      const ranking = await db.query(`
+        SELECT users.id, users.name,
+        COUNT("shortenedUrls".id) AS linksCount,
           COALESCE(SUM("shortenedUrls"."visitCount"), 0) AS "visitCount"
-        FROM
-          users
+        FROM users
         LEFT JOIN
           "shortenedUrls" ON "shortenedUrls"."userId" = users.id
-        GROUP BY
-          users.id
-        ORDER BY
-          "visitCount" DESC
-        LIMIT
-          10;
-      `;
+        GROUP BY users.id
+        ORDER BY "visitCount" DESC
+        LIMIT 10;`)
   
-      const result = await db.query(query);
-      const usersStats = result.rows.map((row) => ({
+
+      const rankingOrg = ranking.rows.map((row) => ({
         id: row.id,
         name: row.name,
         linksCount: row.linksCount,
         visitCount: row.visitCount,
-      }));
+      }))
   
-      res.status(200).json(usersStats);
+      res.status(200).send(rankingOrg)
     } catch (err) {
-      res.status(500).send(err.message);
+      res.status(500).send(err.message)
     }
   }
   

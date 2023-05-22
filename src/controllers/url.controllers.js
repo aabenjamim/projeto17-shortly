@@ -46,7 +46,7 @@ export async function getUrlId(req, res){
         }
 
         const url = await db.query(`
-        SELECT "shortenedUrls".id, "shortUrl", "originalUrls".url AS "originalUrl"
+        SELECT "shortenedUrls".id, "shortUrl", "originalUrls".url AS "url"
         FROM "shortenedUrls"
         JOIN "originalUrls" ON "shortenedUrls"."originalUrlId" = "originalUrls".id
         WHERE "shortenedUrls".id = $1

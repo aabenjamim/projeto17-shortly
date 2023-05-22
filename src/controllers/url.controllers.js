@@ -71,7 +71,7 @@ export async function getRedirect(req, res){
         }
 
         await db.query(`
-        UPDATE "shortenedUrls" SET ""visitCount""="visitCount"+1 WHERE "shortUrl"=$1
+        UPDATE "shortenedUrls" SET "visitCount"="visitCount"+1 WHERE "shortUrl"=$1
         `,[shortUrl])
 
         const urlOriginal = await db.query(`

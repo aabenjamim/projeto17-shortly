@@ -27,6 +27,7 @@ SET default_table_access_method = heap;
 CREATE TABLE public."originalUrls" (
     id integer NOT NULL,
     url text NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
     "userId" integer NOT NULL
 );
 
